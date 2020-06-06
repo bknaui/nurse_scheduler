@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <title>Login</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            background: url('images/nurse_scheduling_bg.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        .login-title {
+            font-size: 24px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .login-logo {
+            height: 75px;
+            width: 75px;
+        }
+
+        .login-bg {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .h-60 {
+            height: 80% !important;
+        }
+
+        .h-40 {
+            height: 40% !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="row h-100 p-0 m-0">
+        <div class="col-md-9 h-100 p-0 m-0">
+
+        </div>
+        <div class="col-md-3 h-100 login-bg p-0 m-0">
+            <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                <div class="d-flex flex-column align-items-center justify-content-center h-40 w-100">
+                    <img src="images/logo.png" class="img-responsive login-logo" />
+                    <div class="login-title">Nurse Scheduling</div>
+                </div>
+                <div class="h-40 w-100">
+                    <div class="form-group ml-4 mr-4">
+                        <input type="text" class="form-control" id="username" value="ADMIN" placeholder="Username" />
+                    </div>
+                    <div class="form-group ml-4 mr-4">
+                        <input type="password" class="form-control" id="password" value="nurse_scheduler_admin" placeholder="Password" />
+                        <button class="btn btn-primary w-100 mt-2" id="btn_login">LOGIN</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/jquery-3.4.1.slim.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#btn_login").click(function () {
+                login();
+            });
+
+            $("body").keypress(function (event) {
+                if (event.charCode == 13) {
+                    login();
+                }
+            });
+        });
+
+        function login() {
+            const username = $("#username").val();
+            const password = $("#password").val();
+
+            fetch("/login", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username: username, password: password })
+            })
+                .then(res => res.text())
+                .then(data => {
+                    if (data == "FAIL") {
+                        alert("Incorrect credentials");
+                        return;
+                    }
+
+                    window.location.href = "http://localhost:3000/admin";
+                })
+                .catch(err => {
+                    console.log("ERROR " + err);
+                });
+        }
+    </script>
+
+</body>
+
+</html>

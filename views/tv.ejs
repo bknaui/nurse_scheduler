@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/simplePagination.css">
+    <link rel="stylesheet" href="css/selectize.css">
+
+    <title>Nurse Schedule</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            background: #eeeeee;
+            overflow: hidden;
+        }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            height: 0;
+        }
+
+        .carousel-control-next-icon:after {
+            content: '>';
+            font-size: 55px;
+            color: red;
+        }
+
+        .carousel-control-prev-icon:after {
+            content: '<';
+            font-size: 55px;
+            color: red;
+        }
+
+        .bg-primary {
+            background: rgb(220, 53, 69) !important;
+        }
+
+        .border-transparent {
+            border-color: transparent !important;
+        }
+
+        .border-1 {
+            border-left: 1px solid #d7d7d7;
+            border-top: 1px solid #d7d7d7;
+            border-bottom: 1px solid #d7d7d7;
+        }
+
+        .border-7 {
+            border: 1px solid #d7d7d7;
+        }
+
+        .text-transparent {
+            color: transparent !important;
+        }
+
+        .br-0 {
+            border-radius: 0 !important;
+        }
+
+        .schedule-title {
+            font-size: 24px;
+        }
+
+        .w-14 {
+            font-size: 13px;
+            color: slategrey;
+            width: 14.28571428571429% !important;
+        }
+
+        .calendar-date {
+            cursor: pointer;
+            font-size: 12px;
+            height: 15% !important;
+        }
+
+        .dashboard-container>div {
+            margin-top: 5px;
+            font-size: 24px;
+            color: rgb(54, 187, 232);
+            font-weight: bold;
+        }
+
+        .dashboard-container>img {
+            height: 80px;
+            width: 80px;
+        }
+
+        .announcement-text {
+            font-size: 18px;
+        }
+
+        .announcement-logo {
+            height: 75px;
+            width: 75px;
+        }
+
+        .header-nurse-logo {
+            height: 50px;
+            width: 200px;
+        }
+
+        .header-logo {
+            height: 50px;
+            width: 50px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .header-date {
+            font-size: 18px;
+            color: white;
+            font-weight: bold;
+        }
+
+
+        .bg-header {
+            background: rgb(53, 20, 0);
+        }
+
+        .btn-dark {
+            background: black !important;
+        }
+
+        .announcement-container {
+            content: '';
+            display: block;
+            visibility: hidden;
+            width: 300px;
+            border: 0.2px solid rgba(141, 141, 141, 0.5) !important;
+            margin-top: 3.7%;
+            background: white;
+            position: absolute;
+            z-index: 99;
+            font-size: 12px;
+        }
+
+        .active {
+            visibility: unset;
+        }
+
+        .announcement-subject {
+            font-weight: bold;
+            color: black;
+        }
+
+        .announcement-date {
+            float: right;
+            font-size: 10px;
+            color: rgba(141, 141, 141, 0.8);
+        }
+
+        .bg-not-read {
+            background: rgb(237, 242, 250);
+        }
+
+        .monthly-text {
+            font-size: 14px;
+        }
+
+        .p-fixed {
+            height: 100%;
+            width: 100%;
+            position: fixed !important;
+            z-index: 9999 !important;
+        }
+
+        .h-10 {
+            height: 10% !important;
+        }
+
+        .h-90 {
+            height: 90% !important;
+        }
+
+        .modal-fullscreen {
+            margin: 0 !important;
+            padding: 0 !important;
+            max-width: 100% !important;
+        }
+
+        thead,
+        thead tr,
+        tbody {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        tbody td {
+            margin: 0 !important;
+            padding: 5px !important;
+        }
+
+        .announcement-header {
+            font-weight: bold;
+            font-size: large;
+            margin-bottom: 10px;
+        }
+
+        .announcement-body {
+            margin-bottom: 10px;
+            font-size: medium;
+        }
+
+        .announcement-footer {
+            text-align: right;
+            font-size: small;
+        }
+
+        .bg-transparent {
+            background-color: transparent !important;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-dark bg-header h-10">
+        <div class="w-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex flex-row">
+                    <div class="mr-2">
+                        <img src="images/logo.png" class="header-logo">
+                    </div>
+                    <div>
+                        <img src="images/ic_nurse_planner_with_text.png" class="header-nurse-logo">
+                    </div>
+
+                </div>
+                <div></div>
+                <div class="d-flex justfiy-content-center flex-column align-items-center header-date h-100">
+                    <div id="time"></div>
+                    <div id="date"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="h-90">
+        <div class="h-100">
+            <div class="d-flex align-items-center justify-content-between mb-1 p-2">
+                <div>
+                    <button class="btn btn-sm btn-dark" id="btn_today">TODAY</button>
+                </div>
+                <div class="schedule-title d-flex align-items-center">
+                    <button class="btn btn-lg bg-transparent" id="calendar_caret_left"><i
+                            class="fa fa-caret-left"></i></button>
+                    <div id="calendar_title"></div>
+                    <button class="btn btn-lg bg-transparent" id="calendar_caret_right"><i
+                            class="fa fa-caret-right"></i></button>
+                </div>
+                <div class="d-flex">
+                    <div class="ml-1">
+                        <button class="btn btn-danger" id="btn_view_announcement"><i class="fa fa-envelope"></i><span
+                                id="new_announcement" class="ml-1 text-white d-none"></span></button>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-row text-center h-100">
+                <div class="flex-fill" id="column_1">
+                    <div class="border-1">Sun</div>
+                </div>
+                <div class="flex-fill" id="column_2">
+                    <div class="border-1">Mon</div>
+                </div>
+                <div class="flex-fill" id="column_3">
+                    <div class="border-1">Tue</div>
+                </div>
+                <div class="flex-fill" id="column_4">
+                    <div class="border-1">Wed</div>
+                </div>
+                <div class="flex-fill" id="column_5">
+                    <div class="border-1">Thu</div>
+                </div>
+                <div class="flex-fill" id="column_6">
+                    <div class="border-1">Fri</div>
+                </div>
+                <div class="flex-fill" id="column_7">
+                    <div class="border-7">Sat</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="announcements_modal">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Announcements</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center" id="announcement_loader">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                    <div id="announcement_list">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="filter_modal">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Information</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="filters_container">
+                        <div class="d-flex w-100 mb-5">
+                            <div class="card p-2 w-50">
+                                <div class="font-weight-bold">LEGEND:</div>
+                                <div class="d-flex justify-content-between pl-1 pr-1 text-left">
+                                    <div class="d-flex flex-column">
+                                        <div>2 = 2:00 PM - 10:00 PM</div>
+                                        <div>4 = 4:00 PM - 12:00 AM</div>
+                                        <div>6 = 6:00 AM - 2:00 PM</div>
+                                        <div>6A = 6:00 AM - 4:00 PM</div>
+                                        <div>6P = 6:00 PM - 6:00 AM</div>
+                                        <div>7 = 7:00 AM - 3:00 PM</div>
+                                        <div>8 = 8:00 AM - 4:00 PM</div>
+                                        <div>9 = 9:00 AM - 5:00 PM</div>
+                                        <div>10 = 10:00 PM - 6:00 AM</div>
+                                        <div>12 = 12:00 AM - 8:00 AM</div>
+                                        <div>H = HOLIDAY/SPECIAL NON-WORKING HOLIDAY</div>
+                                        <div>CO = COMPENSATORY OFF</div>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <div>OB = OFFICIAL BUSINESS</div>
+                                        <div>* = SEMINAR</div>
+                                        <div>RD = REST DAY</div>
+                                        <div>FL = FORCE LEAVE</div>
+                                        <div>VL = VACATION LEAVE</div>
+                                        <div>LV = LEAVE</div>
+                                        <div>R = REQUESTED OFF</div>
+                                        <div>LO = LACKING OFF</div>
+                                        <div>O = OFF DUTY</div>
+                                        <div>PL = PRIVILEGE LEAVE</div>
+                                        <div>SL = SICK LEAVE</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-25">
+                            </div>
+                            <div class="card p-2 w-50">
+                                <div class="font-weight-bold mb-2">FILTERS:</div>
+                                <div class="d-flex justify-content-between">
+                                    <div class="d-flex flex-column">
+                                        <div class="m-1"><button class="btn btn-sm btn-dark btn-filter">Daily</button>
+                                        </div>
+                                        <div class="m-1"><button
+                                                class="btn btn-sm btn-secondary btn-filter">Weekly</button>
+                                        </div>
+                                        <div class="m-1"><button
+                                                class="btn btn-sm btn-secondary btn-filter">Monthly</button>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex">
+                                        <div class="d-flex flex-column">
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">2</button></div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">4</button></div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">6</button></div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">6A</button></div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">6P</button></div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">7</button></div>
+
+
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">8</button></div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">9</button></div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">10</button></div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">12</button></div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">H</button></div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">CO</button></div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">OB</button></div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">*</button></div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">RD</button>
+                                            </div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">FL</button>
+                                            </div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">VL</button>
+                                            </div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">LV</button>
+                                            </div>
+
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">R</button></div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">LO</button>
+                                            </div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">O</button></div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">PL</button>
+                                            </div>
+                                            <div class="m-1"><button
+                                                    class="btn btn-sm btn-secondary btn-shift">SL</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <div class="m-1"><button class="btn btn-sm btn-dark btn-cluster" value="CLUSTER I">CLUSTER
+                                                I</button>
+                                        </div>
+                                        <div class="m-1"><button class="btn btn-sm btn-secondary btn-cluster" value="CLUSTER II">CLUSTER
+                                                II</button></div>
+                                        <div class="m-1"><button class="btn btn-sm btn-secondary btn-cluster" value="CLUSTER III">CLUSTER
+                                                III</button></div>
+                                        <div class="m-1"><button class="btn btn-sm btn-secondary btn-cluster" value="CLUSTER IV">CLUSTER
+                                                IV</button></div>
+                                        <div class="m-1"><button class="btn btn-sm btn-secondary btn-cluster" value="CLUSTER V">CLUSTER
+                                                V</button></div>
+                                        <div class="m-1"><button class="btn btn-sm btn-secondary btn-cluster" value="CLUSTER VI">CLUSTER
+                                                VI</button></div>
+                                        <div class="m-1"><button class="btn btn-sm btn-secondary btn-cluster" value="CLUSTER VII">CLUSTER
+                                                VII</button></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="detail_modal">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nurse Information</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="d-flex flex-column justify-content-center align-items-center mb-2">
+                            <div class="d-flex justify-content-center">
+                                <img src="images/ic_nurse.png" class="w-50 h-50" />
+                            </div>
+                            <div class="d-flex flex-column justify-content-center mt-3">
+                                <div class="font-weight-bold text-center" id="nurse_name">Asnaui O. Pangcatan</div>
+                                <div class="text-center" id="nurse_department">Computer Maintenance Technologist II
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card p-0 m-0">
+                            <div class="card-body p-1">
+                                <div class="d-flex justify-content-center mb-1 ">
+                                    <div class="schedule-title align-items-center" id="calendar_title"></div>
+                                </div>
+                                <div class="d-flex flex-row text-center">
+                                    <div class="flex-fill" id="column_1">
+                                        <div class="border-1">Sun</div>
+                                    </div>
+                                    <div class="flex-fill" id="column_2">
+                                        <div class="border-1">Mon</div>
+                                    </div>
+                                    <div class="flex-fill" id="column_3">
+                                        <div class="border-1">Tue</div>
+                                    </div>
+                                    <div class="flex-fill" id="column_4">
+                                        <div class="border-1">Wed</div>
+                                    </div>
+                                    <div class="flex-fill" id="column_5">
+                                        <div class="border-1">Thu</div>
+                                    </div>
+                                    <div class="flex-fill" id="column_6">
+                                        <div class="border-1">Fri</div>
+                                    </div>
+                                    <div class="flex-fill" id="column_7">
+                                        <div class="border-7">Sat</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade w-100 h-100" id="nurse_list_modal">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content w-100 h-100">
+                <div class="modal-header d-flex align-items-center m-0 p-0">
+                    <h5 class="modal-title ml-2">Schedules</h5>
+                    <div class="modal-tools">
+                        <div class="d-flex">
+                            <button class="btn btn-lg bg-transparent m-0 p-2" id="btn_filter"><i
+                                    class="fa fa-cog"></i></button>
+                            <button class="btn btn-lg bg-transparent m-0 p-2" data-dismiss="modal" aria-label="Close"><i
+                                    class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-body text-center">
+                    <div class="table-schedule table-responsive d-none" id="monthly_table">
+                        <div class="font-weight-bold mb-3 d-flex align-items-center justify-content-center m-0 p-0">
+                            <button class="btn btn-lg bg-transparent" id="month_caret_left"><i
+                                    class="fa fa-caret-left"></i></button>
+                            <div id="monthly_title"></div>
+                            <button class="btn btn-lg bg-transparent" id="month_caret_right"><i
+                                    class="fa fa-caret-right"></i></button>
+                        </div>
+                        <table class="table table-bordered h-100">
+                            <thead class="m-0 p-0">
+                                <tr class="m-0 p-0">
+                                    <th class="m-0 p-0" style="width:38%">Area/Nurse</th>
+                                    <% for(let i=1; i<=31; i++){ %>
+                                    <th class="m-0 p-0" style="width:2%"><%- i %></th>
+                                    <% } %>
+                                </tr>
+                            </thead>
+                            <tbody id="monthly_tbody" class="m-0 p-0">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-schedule  table-responsive d-none" id="weekly_table">
+                        <div class="font-weight-bold" id="weekly_title"></div>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div id="weekly_indicator_left">
+                                <button class="btn btn-sm" id="btn_weekly_left"><i
+                                        class="fa fa-arrow-left"></i></button>
+                            </div>
+                            <div class="font-weight-bold" id="weekly_indicator"></div>
+                            <div id="weekly_indicator_right">
+                                <button class="btn btn-sm" id="btn_weekly_right"><i
+                                        class="fa fa-arrow-right"></i></button>
+                            </div>
+                        </div>
+                        <table class="table table-bordered mt-3 h-100">
+                            <thead class="th-light">
+                                <tr>
+                                    <th style="width:86%">Area/Nurse</th>
+                                    <th style="width:2%">SUN</th>
+                                    <th style="width:2%">MON</th>
+                                    <th style="width:2%">TUE</th>
+                                    <th style="width:2%">WED</th>
+                                    <th style="width:2%">THU</th>
+                                    <th style="width:2%">FRI</th>
+                                    <th style="width:2%">SAT</th>
+                                </tr>
+                            </thead>
+                            <tbody id="weekly_tbody">
+                                <tr>
+                                    <td>Asnaui O. Pangcatan</td>
+                                    <td>RD</td>
+                                    <td>8S</td>
+                                    <td>8S</td>
+                                    <td>8S</td>
+                                    <td>8S</td>
+                                    <td>8S</td>
+                                    <td>RD</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-schedule table-responsive" id="daily_table">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <button class="btn btn-lg bg-transparent" id="daily_caret_left"><i
+                                    class="fa fa-caret-left"></i></button>
+                            <div class="font-weight-bold" id="daily_title"></div>
+                            <button class="btn btn-lg bg-transparent" id="daily_caret_right"><i
+                                    class="fa fa-caret-right"></i></button>
+                        </div>
+                        <table class="table table-bordered mt-3 h-100">
+                            <thead class="th-light">
+                                <tr>
+                                    <th>Area/Nurse</th>
+                                    <th>Shift</th>
+                                </tr>
+                            </thead>
+                            <tbody id="daily_tbody">
+                                <tr>
+                                    <td>Asnaui O. Pangcatan</td>
+                                    <td>9:00AM - 10:00PM</td>
+                                </tr>
+                                <tr>
+                                    <td>Asnaui O. Pangcatan</td>
+                                    <td>9:00AM - 10:00PM</td>
+                                </tr>
+                                <tr>
+                                    <td>Asnaui O. Pangcatan</td>
+                                    <td>9:00AM - 10:00PM</td>
+                                </tr>
+                                <tr>
+                                    <td>Asnaui O. Pangcatan</td>
+                                    <td>9:00AM - 10:00PM</td>
+                                </tr>
+                                <tr>
+                                    <td>Asnaui O. Pangcatan</td>
+                                    <td>9:00AM - 10:00PM</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="js/jquery-3.4.1.slim.min.js"></script>
+    <script src="js/jquery.flip.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/moment.min.js"></script>
+    <script src="js/jquery.simplePagination.js"></script>
+    <script src="js/selectize.min.js"></script>
+    <script src="js/tv.js"></script>
+</body>
+
+</html>

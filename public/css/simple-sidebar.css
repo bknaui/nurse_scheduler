@@ -1,0 +1,99 @@
+/*!
+ * Start Bootstrap - Simple Sidebar (https://startbootstrap.com/template-overviews/simple-sidebar)
+ * Copyright 2013-2019 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-simple-sidebar/blob/master/LICENSE)
+ */
+
+body {
+  overflow-x: hidden;
+}
+
+.app-section {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  margin: 0 !important;
+  color: white;
+  background: transparent !important;
+}
+
+#vsmmc_logo{
+  width: 100vw !important;
+}
+
+
+a.active,a.active:hover{
+  color:white !important;
+  background-color:#1976d2 !important;
+}
+.list-group :hover{
+  background: rgb(109,37,5) !important;
+  color:white !important;
+}
+
+
+#sidebar-wrapper {
+  min-height: 100vh;
+  margin-left: -15rem;
+  -webkit-transition: margin .25s ease-out;
+  -moz-transition: margin .25s ease-out;
+  -o-transition: margin .25s ease-out;
+  transition: margin .25s ease-out;
+  background: white;
+}
+
+#sidebar-wrapper .list-group {
+  width: 15rem;
+}
+
+#page-content-wrapper {
+  min-width: 100vw !important;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+  margin-left: 0;
+}
+
+#sidebar-modal-header{
+  background: rgb(109,37,5) !important;
+}
+
+#sidebar_modal{
+  margin:0 !important;
+  padding:0 !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+}
+
+#sidebar_modal .modal-header{
+  border-radius: 0 !important;
+}
+
+#sidebar_modal .modal-content{
+  width: 50% !important;
+  border-radius: 0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important
+}
+
+
+#sidebar_modal .modal-dialog{
+  margin:0 !important;
+  padding:0 !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important
+}
+
+@media (min-width: 768px) {
+  #sidebar-wrapper {
+    margin-left: 0;
+  }
+  #page-content-wrapper {
+    min-width: 0;
+    width: 100%;
+  }
+  #wrapper.toggled #sidebar-wrapper {
+    margin-left: -15rem;
+  }
+}
